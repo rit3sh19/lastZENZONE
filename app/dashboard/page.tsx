@@ -30,10 +30,9 @@ export default function DashboardPage() {
 
   const getMoodTrend = () => {
     if (moodHistory.length < 2) return "stable"
-    const recent = moodHistory.slice(0, Math.floor(moodHistory.length / 2))
-    const older = moodHistory.slice(Math.floor(moodHistory.length / 2))
-
-    if (recent.length === 0 || older.length === 0) return "stable"
+    const mid = Math.floor(moodHistory.length / 2)
+    const recent = moodHistory.slice(mid)
+    const older = moodHistory.slice(0, mid)
 
     const recentAvg = recent.reduce((acc, entry) => acc + entry.mood, 0) / recent.length
     const olderAvg = older.reduce((acc, entry) => acc + entry.mood, 0) / older.length
@@ -44,13 +43,10 @@ export default function DashboardPage() {
   }
 
   const getSentimentDistribution = () => {
-    if (journalEntries.length === 0) return {}
-
     const distribution: { [key: string]: number } = {}
     journalEntries.forEach((entry) => {
       distribution[entry.sentiment] = (distribution[entry.sentiment] || 0) + 1
     })
-
     return distribution
   }
 
@@ -100,7 +96,9 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Average Mood */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-green-300">Average Mood</CardTitle>
@@ -111,18 +109,22 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
+          {/* Mood Trend */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-blue-300">Mood Trend</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-2">
-                <div className="text-2xl">{trend === "improving" ? "📈" : trend === "declining" ? "📉" : "➡️"}</div>
+                <div className="text-2xl">
+                  {trend === "improving" ? "📈" : trend === "declining" ? "📉" : "➡️"}
+                </div>
                 <div className="text-lg font-bold capitalize">{trend}</div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Streak */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-orange-300">Streak</CardTitle>
@@ -133,6 +135,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
+          {/* Total Entries */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-purple-300">Total Entries</CardTitle>
@@ -144,7 +147,9 @@ export default function DashboardPage() {
           </Card>
         </div>
 
+        {/* Main Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Mood History */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -155,7 +160,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {moodHistory.slice(0, 7).map((entry, index) => {
+                {moodHistory.slice(0, 7).map((entry) => {
                   const moodEmojis = ["😢", "😔", "😐", "😊", "😄"]
                   const moodLabels = ["Terrible", "Poor", "Okay", "Good", "Excellent"]
                   return (
@@ -181,6 +186,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
+          {/* Sentiment Analysis */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -202,10 +208,10 @@ export default function DashboardPage() {
                           sentiment === "positive"
                             ? "bg-green-500"
                             : sentiment === "negative"
-                              ? "bg-red-500"
-                              : sentiment === "anxious"
-                                ? "bg-orange-500"
-                                : "bg-gray-500"
+                            ? "bg-red-500"
+                            : sentiment === "anxious"
+                            ? "bg-orange-500"
+                            : "bg-gray-500"
                         }`}
                       ></div>
                       <span className="capitalize text-white">{sentiment}</span>
@@ -216,68 +222,6 @@ export default function DashboardPage() {
                 {Object.keys(sentimentDist).length === 0 && (
                   <p className="text-blue-200 text-center py-6">No journal entries yet. Start writing!</p>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Brain className="h-5 w-5 text-purple-300" />
-                <span>CBT Progress</span>
-              </CardTitle>
-              <CardDescription className="text-blue-100">Your cognitive behavioral therapy activities</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                  <span className="text-white">Thought Records</span>
-                  <Badge className="bg-purple-600 text-white border-0">{thoughtRecords.length}</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                  <span className="text-white">Behavior Logs</span>
-                  <Badge className="bg-purple-600 text-white border-0">
-                    {JSON.parse(localStorage.getItem("behaviorLogs") || "[]").length}
-                  </Badge>
-                </div>
-                <div className="text-sm text-blue-200 mt-4 p-3 bg-white/5 rounded-lg">
-                  Keep practicing CBT techniques to build healthier thought patterns. You're doing great!
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader>
-              <CardTitle>Weekly Goals</CardTitle>
-              <CardDescription className="text-blue-100">Track your mental health objectives</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                  <span className="text-sm text-white">Daily mood tracking</span>
-                  <Badge
-                    className={`border-0 ${moodHistory.length >= 7 ? "bg-green-600 text-white" : "bg-gray-600 text-white"}`}
-                  >
-                    {Math.min(moodHistory.length, 7)}/7
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                  <span className="text-sm text-white">Journal entries</span>
-                  <Badge
-                    className={`border-0 ${journalEntries.length >= 3 ? "bg-green-600 text-white" : "bg-gray-600 text-white"}`}
-                  >
-                    {Math.min(journalEntries.length, 3)}/3
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
-                  <span className="text-sm text-white">CBT exercises</span>
-                  <Badge
-                    className={`border-0 ${thoughtRecords.length >= 2 ? "bg-green-600 text-white" : "bg-gray-600 text-white"}`}
-                  >
-                    {Math.min(thoughtRecords.length, 2)}/2
-                  </Badge>
-                </div>
               </div>
             </CardContent>
           </Card>
