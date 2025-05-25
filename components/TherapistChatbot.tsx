@@ -112,10 +112,10 @@ export function TherapistChatbot() {
 
       {/* Chat Window */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-80 max-w-full">
-          <Card className="shadow-2xl border-4 border-purple-400 rounded-3xl bg-gradient-to-br from-white/95 to-purple-100/95 backdrop-blur-sm transform hover:scale-105 transition-all duration-300">
-            <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-pink-500 to-purple-600 rounded-t-2xl p-4">
-              <CardTitle className="text-white text-lg font-black flex items-center gap-3">
+        <div className="fixed bottom-4 right-4 z-40 w-[calc(100%-2rem)] sm:w-96 h-auto max-h-[calc(100vh-6rem)] flex flex-col bg-white rounded-3xl shadow-2xl border-4 border-purple-400 overflow-hidden">
+          <div className="flex flex-col h-full">
+            <div className="flex-shrink-0 flex items-center justify-between bg-gradient-to-r from-pink-500 to-purple-600 p-4">
+              <div className="text-white text-lg font-black flex items-center gap-3">
                 <div className="relative">
                   <span role="img" aria-label="Therapist" className="text-2xl animate-bounce">
                     👩‍⚕️
@@ -123,21 +123,19 @@ export function TherapistChatbot() {
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-ping"></div>
                 </div>
                 💕 AI Therapist
-              </CardTitle>
-              <Button
-                size="icon"
-                variant="ghost"
+              </div>
+              <button
                 onClick={() => setOpen(false)}
-                className="text-white hover:bg-white/20 rounded-full transform hover:scale-110 transition-all duration-300"
+                className="text-white hover:bg-white/20 rounded-full p-1 transition-all"
               >
                 <X className="w-5 h-5" />
-              </Button>
-            </CardHeader>
+              </button>
+            </div>
 
-            <CardContent className="bg-gradient-to-br from-white to-purple-50 p-4 h-80 flex flex-col rounded-b-2xl">
-              <div ref={chatRef} className="flex-1 overflow-y-auto space-y-3 mb-4 pr-2">
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-3" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                 {messages.map((msg, i) => (
-                  <div key={i} className={`text-sm p-4 max-w-[85%] ${getBubbleClass(msg.role)}`}>
+                  <div key={i} className={`text-sm p-4 max-w-[85%] ${getBubbleClass(msg.role)} break-words overflow-hidden`} style={{ wordBreak: 'break-word' }}>
                     {msg.content}
                   </div>
                 ))}
@@ -156,29 +154,30 @@ export function TherapistChatbot() {
                 )}
               </div>
 
-              <div className="flex gap-3 mt-2">
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Share what's on your mind bestie... 💭"
-                  className="flex-1 border-3 border-purple-300 rounded-2xl focus:border-pink-500 focus:ring-4 focus:ring-pink-200 bg-white font-medium"
-                  disabled={loading}
-                />
-                <Button
-                  onClick={handleSend}
-                  disabled={!input.trim() || loading}
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold px-4 py-2 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300 border-2 border-white"
-                >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "💌"}
-                </Button>
+              <div className="p-4 border-t border-purple-100 bg-white">
+                <div className="flex gap-3">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    placeholder="Share what's on your mind bestie... 💭"
+                    className="flex-1 border-2 border-purple-200 rounded-2xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    disabled={loading}
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={!input.trim() || loading}
+                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold px-4 py-2 rounded-2xl shadow-lg disabled:opacity-50"
+                  >
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "💌"}
+                  </button>
+                </div>
+                <div className="text-xs text-purple-600 font-semibold text-center mt-2 bg-purple-50 p-2 rounded-lg">
+                  🔒 Your conversations are private and secure bestie! 💕
+                </div>
               </div>
-
-              <div className="text-xs text-purple-600 font-semibold text-center mt-2 bg-purple-50 p-2 rounded-lg">
-                🔒 Your conversations are private and secure bestie! 💕
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
     </>
