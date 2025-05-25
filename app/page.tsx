@@ -36,136 +36,167 @@ export default function HomePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-400 via-amber-500 to-yellow-400 dark:from-orange-800 dark:via-amber-900 dark:to-yellow-900 flex flex-col items-center justify-between p-4 relative overflow-hidden transition-colors duration-200">
-        {/* Theme Toggle Button */}
+      <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 dark:from-indigo-950 dark:via-purple-900 dark:to-pink-900">
+        {/* Animated floating elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          {[...Array(8)].map((_, i) => (
+            <div 
+              key={i}
+              className="absolute rounded-full opacity-20 animate-float"
+              style={{
+                width: `${Math.random() * 300 + 100}px`,
+                height: `${Math.random() * 300 + 100}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                background: `radial-gradient(circle, ${i % 2 === 0 ? 'var(--primary)' : 'var(--accent)'}, transparent 70%)`,
+                animationDuration: `${Math.random() * 30 + 30}s`,
+                animationDelay: `-${Math.random() * 20}s`,
+                filter: 'blur(40px)'
+              }}
+            />
+          ))}
+        </div>
+        {/* Abstract background elements */}
+        <div className="fixed inset-0 opacity-30 dark:opacity-20 pointer-events-none">
+          {/* Animated grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: 'linear-gradient(var(--grid-color, rgba(255,255,255,0.1)) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color, rgba(255,255,255,0.1)) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+              animation: 'gridMove 10s linear infinite',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent, white 10%, white 90%, transparent)'
+            }}
+          ></div>
+          <div 
+            className="absolute inset-0 opacity-10 dark:opacity-5"
+            style={{
+              backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23ffffff\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")',
+              animation: 'backgroundMove 100s linear infinite'
+            }}
+          ></div>
+          <div className="absolute top-1/4 -left-40 w-[32rem] h-[32rem] bg-indigo-500/20 dark:bg-indigo-400/10 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-1/4 -right-40 w-[32rem] h-[32rem] bg-pink-500/20 dark:bg-pink-400/10 rounded-full filter blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[60rem] max-h-[60rem] bg-white/5 dark:bg-white/3 rounded-full filter blur-3xl"></div>
+        </div>
+        
+        {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="fixed top-4 right-4 p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all z-50 shadow-lg hover:scale-110"
+          className="fixed top-4 right-4 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all z-50 shadow-lg hover:scale-110"
           aria-label="Toggle theme"
         >
-          {theme === 'dark' ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+          {theme === 'dark' ? (
+            <Sun className="w-5 h-5" />
+          ) : (
+            <Moon className="w-5 h-5" />
+          )}
         </button>
-        
-        {/* Animated background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-          <div className="absolute top-20 left-20 w-32 h-32 bg-yellow-300/30 rounded-full animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-amber-300/30 rounded-full animate-ping"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-orange-400/30 rounded-full animate-bounce"></div>
-          <div className="absolute bottom-1/3 right-1/3 w-24 h-24 bg-yellow-200/30 rounded-full animate-pulse"></div>
-        </div>
-
-        {/* Header */}
-        {/* <header className="w-full max-w-7xl mx-auto pt-8 px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-white animate-pulse" />
-              <span className="text-2xl font-bold text-white">ZenZone</span>
-            </div>
-            <div className="flex space-x-4">
-              <Link href="/auth?tab=login" className="px-4 py-2 text-white hover:text-amber-100 transition-colors font-medium">
-                Sign In
-              </Link>
-              <Link 
-                href="/auth?tab=register" 
-                className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-full font-medium transition-all backdrop-blur-sm"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </header> */}
 
         {/* Hero Section */}
-        <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24 relative z-10">
+        <main className="container relative z-10 py-16 md:py-24 lg:py-32 px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Main Content */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-                <Sparkles className="h-4 w-4" />
-                <span>Your mental health matters</span>
+              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-400/30 via-pink-500/30 to-purple-500/30 backdrop-blur-sm text-white text-sm font-medium px-6 py-2.5 rounded-full mb-8 border border-white/10 shadow-lg hover:shadow-xl hover:shadow-yellow-400/20 transition-all duration-300 transform hover:scale-105">
+                <span className="text-yellow-300 animate-pulse">✨</span>
+                <span className="relative">
+                  Your mental health matters
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-yellow-300/50 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                </span>
               </div>
               
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
-                Hey there! Let's talk about <span className="text-amber-100">how you're really doing</span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
+                <span className="relative inline-block">
+                  <span className="relative z-10">Hey friend,</span>
+                  <span className="absolute -bottom-1 left-0 w-full h-3 bg-yellow-400/30 -rotate-1 -z-0"></span>
+                </span>
+                <br />
+                <span className="relative inline-block">
+                  <span className="relative z-10 text-indigo-200 dark:text-indigo-100">how are you</span>
+                  <span className="absolute -bottom-1 left-0 w-full h-3 bg-pink-400/30 -rotate-1 -z-0"></span>
+                </span>
+                <span className="relative">
+                  <span className="relative z-10"> really?</span>
+                  <span className="absolute -bottom-1 left-0 w-full h-3 bg-purple-400/30 -rotate-1 -z-0"></span>
+                </span>
               </h1>
               
-              <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                No corporate speak, no judgment—just real support for your mental health journey. Whether you're having a rough day or just need to vent, 
-                we've got your back. Because let's be honest, adulting is hard enough as it is. 💪
+              <p className="text-lg sm:text-xl text-white/90 dark:text-white/80 mb-8 sm:mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                No pressure, no judgment—just a safe space to check in with yourself. 
+                Because sometimes the bravest thing you can do is admit you're not okay.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center lg:justify-start">
-                <Link href="/auth?tab=register">
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-lg px-8 py-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-2 border-white/20"
-                  >
-                    <Zap className="mr-2 h-5 w-5" />
-                    Start Your Journey - It's Free!
-                  </Button>
+                <Link href="/auth?tab=register" className="btn bg-white text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800">
+                  <span className="text-sm font-normal block">No credit card needed</span>
+                  <span className="text-lg font-medium">Start your journey</span>
                 </Link>
-                <Link href="#features">
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="bg-transparent border-2 border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 rounded-2xl backdrop-blur-sm hover:scale-105 transition-all duration-300"
-                  >
-                    <BarChart2 className="mr-2 h-5 w-5" />
-                    Learn More
-                  </Button>
+                <Link href="#features" className="btn bg-transparent border-2 border-white/20 text-white hover:bg-white/10">
+                  <span className="text-sm font-normal block">Learn more</span>
+                  <span className="text-lg font-medium">How it works</span>
                 </Link>
               </div>
               
-              <div className="flex flex-wrap justify-center lg:justify-start gap-6 mt-8">
-                <div className="flex items-center space-x-2 text-white/80">
-                  <Shield className="h-5 w-5 text-amber-300" />
-                  <span>Private & Secure</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/80">
-                  <Smile className="h-5 w-5 text-amber-300" />
-                  <span>Easy to Use</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/80">
-                  <BarChart2 className="h-5 w-5 text-amber-300" />
-                  <span>Track Your Progress</span>
-                </div>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-6 mt-12">
+                {[
+                  { icon: '🔒', text: 'Private & Secure' },
+                  { icon: '😊', text: 'No Judgment' },
+                  { icon: '📱', text: 'Always Here' }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center space-x-2 text-white/80 dark:text-white/70">
+                    <span className="text-xl">{item.icon}</span>
+                    <span className="text-sm font-medium">{item.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Right Column - Mood Check-in */}
             <div className="relative h-full">
               <div className="relative w-full max-w-md mx-auto">
-                <div className="absolute -top-6 -left-6 w-32 h-32 bg-amber-200/50 dark:bg-amber-800/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-200/50 dark:bg-blue-800/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-pink-200/50 dark:bg-pink-800/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                {/* Decorative elements */}
+                <div className="absolute -top-6 -left-6 w-32 h-32 bg-indigo-400/20 dark:bg-indigo-300/10 rounded-full mix-blend-screen filter blur-xl"></div>
+                <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-pink-400/20 dark:bg-pink-300/10 rounded-full mix-blend-screen filter blur-xl"></div>
                 
-                <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg">
-                      <Heart className="h-6 w-6" />
+                {/* Mood check-in card */}
+                <div className="relative bg-white/10 dark:bg-white/5 backdrop-blur-lg p-8 rounded-2xl border border-white/10 dark:border-white/5 shadow-2xl overflow-hidden">
+                  {/* Subtle grid pattern */}
+                  <div className="absolute inset-0 opacity-5 dark:opacity-10" style={{
+                    backgroundImage: 'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
+                    backgroundSize: '20px 20px',
+                    maskImage: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)'
+                  }}></div>
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-center space-x-4 mb-6">
+                      <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                        🌟
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white text-xl">Daily Check-in</h3>
+                        <p className="text-sm text-white/70">How's your heart today?</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white">Daily Check-in</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">How are you feeling today?</p>
+                    
+                    <div className="grid grid-cols-5 gap-3 mb-8">
+                      {['😢', '😔', '😐', '🙂', '😊'].map((emoji, i) => (
+                        <button 
+                          key={i}
+                          className="text-3xl p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all transform hover:scale-110"
+                          aria-label={`Rate ${i + 1} out of 5`}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
                     </div>
-                  </div>
-                  <div className="grid grid-cols-5 gap-2 mb-6">
-                    {['😢', '😔', '😐', '🙂', '😊'].map((emoji, i) => (
-                      <button 
-                        key={i}
-                        className="text-2xl p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        aria-label={`Rate ${i + 1} out of 5`}
-                      >
-                        {emoji}
+                    
+                    <Link href="/auth?tab=register">
+                      <button className="w-full bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-medium py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg">
+                        I'm ready to feel better
                       </button>
-                    ))}
+                    </Link>
                   </div>
-                  <Link href="/auth?tab=register">
-                    <button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-md">
-                      Get Started
-                    </button>
-                  </Link>
                 </div>
               </div>
             </div>
@@ -173,7 +204,7 @@ export default function HomePage() {
         </main>
         
         {/* Success Stories Section */}
-        <section className="w-full py-20 bg-gradient-to-b from-white/5 to-transparent">
+        <section className="w-full py-16 md:py-24 bg-gradient-to-b from-white/5 to-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white mb-4">Success Stories</h2>

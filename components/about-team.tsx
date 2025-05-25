@@ -18,7 +18,7 @@ type TeamMember = {
 export function AboutTeam() {
   const teamMembers: TeamMember[] = [
     {
-      name: "Vivvesh",
+      name: "Vivesh",
       role: "Team Lead & Full Stack Developer",
       description: "Led the development of ZenZone, focusing on architecture and backend implementation. Passionate about creating impactful mental health solutions.",
       image: "https://avatars.githubusercontent.com/u/12345678",
@@ -131,8 +131,8 @@ export function AboutTeam() {
         <div className="mt-20 text-center">
           <div className="inline-block bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/10 p-1 rounded-full mb-8">
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-6 py-3 rounded-full">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Built with ❤️ during a Hackathon</h3>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">May 2024</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Built with ❤️ during BUILDVERSE</h3>
+              <p className="text-gray-600 dark:text-gray-300 mt-1">May 2025</p>
             </div>
           </div>
 

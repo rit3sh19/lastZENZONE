@@ -20,22 +20,22 @@ export function MainNav() {
 
   const routes = [
     {
-      href: "/features",
+      href: "/#",
       label: "Features",
       active: pathname === "/features",
     },
     {
-      href: "/pricing",
+      href: "/#",
       label: "Pricing",
       active: pathname === "/pricing",
     },
     {
-      href: "/blog",
+      href: "/#",
       label: "Blog",
       active: pathname === "/blog",
     },
     {
-      href: "/about",
+      href: "/#",
       label: "About Us",
       active: pathname === "/about",
     },
