@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Users, MessageCircle, ThumbsUp, Flag, Plus, Reply } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 import Link from "next/link"
 
 const topics = [
@@ -58,63 +59,38 @@ const checkForFlaggedContent = (text: string) => {
 }
 
 export default function CommunityPage() {
+  const { toast } = useToast()
   const [posts, setPosts] = useState<any[]>([])
   const [selectedTopic, setSelectedTopic] = useState("all")
   const [newPost, setNewPost] = useState({ title: "", content: "", topic: "anxiety" })
   const [showNewPost, setShowNewPost] = useState(false)
+  const [userVotes, setUserVotes] = useState<{ [key: string]: boolean }>({})
   const [replyContent, setReplyContent] = useState("")
-  const [replyingTo, setReplyingTo] = useState<number | null>(null)
-  const [userVotes, setUserVotes] = useState<{ [key: number]: boolean }>({})
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    const savedPosts = localStorage.getItem("communityPosts")
-    const savedVotes = localStorage.getItem("userVotes")
-
-    if (savedPosts) {
-      setPosts(JSON.parse(savedPosts))
-    } else {
-      const samplePosts = [
-        {
-          id: 1,
-          title: "Dealing with exam anxiety",
-          content: "I have my finals coming up and I'm feeling overwhelmed. Any tips for managing stress?",
-          topic: "anxiety",
-          author: "StudyWarrior123",
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          upvotes: 5,
-          replies: [
-            {
-              id: 1,
-              content: "Try the 4-7-8 breathing technique! It really helps me calm down before tests.",
-              author: "CalmMind456",
-              timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-              upvotes: 3,
-            },
-          ],
-          flagged: false,
-        },
-        {
-          id: 2,
-          title: "Feeling isolated lately",
-          content: "I've been struggling to connect with friends and family. Anyone else going through this?",
-          topic: "relationships",
-          author: "LonelyHeart789",
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          upvotes: 8,
-          replies: [],
-          flagged: false,
-        },
-      ]
-      setPosts(samplePosts)
-      localStorage.setItem("communityPosts", JSON.stringify(samplePosts))
+    // Fetch posts from API
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/api/community')
+        if (!response.ok) throw new Error('Failed to fetch posts')
+        const data = await response.json()
+        setPosts(data)
+      } catch (error) {
+        console.error('Error fetching posts:', error)
+      }
     }
 
+    fetchPosts()
+
+    const savedVotes = localStorage.getItem("userVotes")
     if (savedVotes) {
       setUserVotes(JSON.parse(savedVotes))
     }
   }, [])
 
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     if (!newPost.title.trim() || !newPost.content.trim()) return
 
     const isFlagged = checkForFlaggedContent(newPost.content)
@@ -123,39 +99,67 @@ export default function CommunityPage() {
       triggerCrisisAlert(newPost.content)
     }
 
-    const post = {
-      id: Date.now(),
-      title: newPost.title,
-      content: newPost.content,
-      topic: newPost.topic,
-      author: generateUsername(),
-      timestamp: new Date().toISOString(),
-      upvotes: 0,
-      replies: [],
-      flagged: isFlagged,
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/community', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newPost.title,
+          content: newPost.content,
+          topic: newPost.topic,
+          author: generateUsername(),
+          type: 'post'
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Failed to create post');
+      }
+      
+      // Update the posts state with the new post
+      setPosts(prevPosts => [responseData, ...prevPosts]);
+      setNewPost({ title: "", content: "", topic: "anxiety" });
+      setShowNewPost(false);
+
+      toast({
+        title: "✨ Post Created Successfully!",
+        description: "Your thoughts have been shared with the community 💕",
+        variant: "default",
+        className: "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-2 border-white",
+      });
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast({
+        title: "❌ Post Creation Failed",
+        description: error instanceof Error ? error.message : "Please try again. If the problem persists, contact support.",
+        variant: "destructive",
+        className: "bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    const updatedPosts = [post, ...posts]
-    setPosts(updatedPosts)
-    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts))
-
-    setNewPost({ title: "", content: "", topic: "anxiety" })
-    setShowNewPost(false)
   }
 
-  const handleUpvote = (postId: number) => {
+  const handleUpvote = async (postId: string) => {
     if (userVotes[postId]) return
 
-    const updatedPosts = posts.map((post) => (post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post))
+    // TODO: Implement upvote API endpoint
+    const updatedPosts = posts.map((post) => 
+      post._id === postId ? { ...post, upvotes: post.upvotes + 1 } : post
+    )
     setPosts(updatedPosts)
-    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts))
 
     const updatedVotes = { ...userVotes, [postId]: true }
     setUserVotes(updatedVotes)
     localStorage.setItem("userVotes", JSON.stringify(updatedVotes))
   }
 
-  const handleReply = (postId: number) => {
+  const handleReply = async (postId: string) => {
     if (!replyContent.trim()) return
 
     const isFlagged = checkForFlaggedContent(replyContent)
@@ -164,23 +168,49 @@ export default function CommunityPage() {
       triggerCrisisAlert(replyContent)
     }
 
-    const reply = {
-      id: Date.now(),
-      content: replyContent,
-      author: generateUsername(),
-      timestamp: new Date().toISOString(),
-      upvotes: 0,
-      flagged: isFlagged,
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/community', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: replyContent,
+          author: generateUsername(),
+          type: 'reply',
+          postId: postId
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to add reply')
+      
+      const updatedPost = await response.json()
+      setPosts(prevPosts => 
+        prevPosts.map(post => post._id === postId ? updatedPost : post)
+      )
+      setReplyContent("")
+      setReplyingTo(null)
+
+      // Show success notification
+      toast({
+        title: "💌 Reply Posted Successfully!",
+        description: "Your supportive message has been added 💕",
+        variant: "default",
+        className: "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-2 border-white",
+      })
+    } catch (error) {
+      console.error('Error adding reply:', error)
+      // Show error notification
+      toast({
+        title: "❌ Reply Failed",
+        description: "Please try again. If the problem persists, contact support.",
+        variant: "destructive",
+        className: "bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white",
+      })
+    } finally {
+      setIsLoading(false)
     }
-
-    const updatedPosts = posts.map((post) =>
-      post.id === postId ? { ...post, replies: [...post.replies, reply] } : post,
-    )
-    setPosts(updatedPosts)
-    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts))
-
-    setReplyContent("")
-    setReplyingTo(null)
   }
 
   const triggerCrisisAlert = (content: string) => {
@@ -360,7 +390,7 @@ export default function CommunityPage() {
             <div className="space-y-6">
               {filteredPosts.map((post) => (
                 <Card
-                  key={post.id}
+                  key={post._id}
                   className={`bg-gradient-to-br from-white/95 to-purple-50/95 backdrop-blur-sm border-4 shadow-2xl rounded-3xl transform hover:scale-[1.02] transition-all duration-300 ${post.flagged ? "border-red-400 bg-gradient-to-br from-red-50/95 to-pink-50/95" : "border-white"}`}
                 >
                   <CardHeader>
@@ -393,9 +423,9 @@ export default function CommunityPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleUpvote(post.id)}
-                        disabled={userVotes[post.id]}
-                        className={`font-bold rounded-2xl px-4 py-2 transition-all transform hover:scale-105 ${userVotes[post.id] ? "text-blue-600 bg-blue-100" : "hover:bg-purple-100"}`}
+                        onClick={() => handleUpvote(post._id)}
+                        disabled={userVotes[post._id] || isLoading}
+                        className={`font-bold rounded-2xl px-4 py-2 transition-all transform hover:scale-105 ${userVotes[post._id] ? "text-blue-600 bg-blue-100" : "hover:bg-purple-100"}`}
                       >
                         <ThumbsUp className="h-4 w-4 mr-2" />💙 {post.upvotes}
                       </Button>
@@ -403,14 +433,15 @@ export default function CommunityPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
-                        className="font-bold rounded-2xl px-4 py-2 hover:bg-purple-100 transition-all transform hover:scale-105"
+                        onClick={() => setReplyingTo(post._id)}
+                        disabled={isLoading}
+                        className="font-bold rounded-2xl px-4 py-2 transition-all transform hover:scale-105 hover:bg-purple-100"
                       >
-                        <Reply className="h-4 w-4 mr-2" />💬 Reply ({post.replies.length})
+                        <Reply className="h-4 w-4 mr-2" />💭 Reply
                       </Button>
                     </div>
 
-                    {replyingTo === post.id && (
+                    {replyingTo === post._id && (
                       <div className="mt-6 space-y-3 p-4 bg-purple-50 rounded-2xl border-2 border-purple-200">
                         <Textarea
                           placeholder="Write a supportive reply bestie... 💕"
@@ -418,20 +449,26 @@ export default function CommunityPage() {
                           onChange={(e) => setReplyContent(e.target.value)}
                           rows={3}
                           className="border-2 border-purple-300 rounded-2xl focus:border-purple-500 bg-white font-medium"
+                          disabled={isLoading}
                         />
                         <div className="flex space-x-3">
                           <Button
                             size="sm"
-                            onClick={() => handleReply(post.id)}
+                            onClick={() => handleReply(post._id)}
                             className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-2xl px-4 py-2"
+                            disabled={isLoading}
                           >
-                            💌 Post Reply
+                            {isLoading ? 'Posting...' : '💌 Post Reply'}
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => setReplyingTo(null)}
+                            onClick={() => {
+                              setReplyingTo(null);
+                              setReplyContent("");
+                            }}
                             className="border-2 border-gray-300 rounded-2xl font-bold"
+                            disabled={isLoading}
                           >
                             Cancel
                           </Button>
@@ -439,11 +476,11 @@ export default function CommunityPage() {
                       </div>
                     )}
 
-                    {post.replies.length > 0 && (
+                    {post.replies && post.replies.length > 0 && (
                       <div className="mt-6 space-y-4 border-l-4 border-purple-300 pl-6">
                         {post.replies.map((reply: any) => (
                           <div
-                            key={reply.id}
+                            key={reply._id}
                             className={`p-4 rounded-2xl shadow-lg ${reply.flagged ? "bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200" : "bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200"}`}
                           >
                             <div className="flex items-center space-x-3 mb-3">

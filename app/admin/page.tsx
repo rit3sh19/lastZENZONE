@@ -37,12 +37,22 @@ export default function AdminPage() {
     }
   }
 
-  const loadAdminData = () => {
+  const loadAdminData = async () => {
     // Load anonymized data from localStorage
     const moods = JSON.parse(localStorage.getItem("moodHistory") || "[]")
     const journals = JSON.parse(localStorage.getItem("journalEntries") || "[]")
     const incidents = JSON.parse(localStorage.getItem("crisisIncidents") || "[]")
-    const posts = JSON.parse(localStorage.getItem("communityPosts") || "[]")
+    
+    // Fetch posts from the API
+    try {
+      const response = await fetch('/api/community');
+      if (!response.ok) throw new Error('Failed to fetch posts');
+      const posts = await response.json();
+      setCommunityPosts(posts);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setCommunityPosts([]);
+    }
 
     // Anonymize data
     const anonymizedMoods = moods.map((entry: any, index: number) => ({
@@ -60,7 +70,6 @@ export default function AdminPage() {
     setMoodData(anonymizedMoods)
     setJournalData(anonymizedJournals)
     setCrisisIncidents(incidents)
-    setCommunityPosts(posts)
   }
 
   const getMoodTrends = () => {
