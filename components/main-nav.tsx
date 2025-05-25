@@ -20,24 +20,24 @@ export function MainNav() {
 
   const routes = [
     {
-      href: "/#",
+      href: "#features",
       label: "Features",
-      active: pathname === "/features",
+      active: pathname === "#features",
     },
     {
-      href: "/#",
+      href: "#pricing",
       label: "Pricing",
-      active: pathname === "/pricing",
+      active: pathname === "#pricing",
     },
     {
-      href: "/#",
-      label: "Blog",
-      active: pathname === "/blog",
+      href: "#testimonials",
+      label: "Testimonials",
+      active: pathname === "#testimonials",
     },
     {
-      href: "/#",
-      label: "About Us",
-      active: pathname === "/about",
+      href: "#team",
+      label: "Our Team",
+      active: pathname === "#team",
     },
   ]
 
@@ -65,17 +65,34 @@ export function MainNav() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6">
             {routes.map((route) => (
               <Link
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-amber-500",
-                  route.active ? "text-amber-500" : "text-gray-700 dark:text-gray-300"
+                  "relative px-3 py-2 text-sm font-medium transition-all duration-300 group",
+                  route.active 
+                    ? "text-amber-500" 
+                    : "text-gray-700 dark:text-gray-300 hover:text-amber-500"
                 )}
+                onClick={(e) => {
+                  if (route.href.startsWith('#')) {
+                    e.preventDefault();
+                    const element = document.querySelector(route.href);
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                      // Update URL without page reload
+                      window.history.pushState(null, '', route.href);
+                    }
+                  }
+                }}
               >
                 {route.label}
+                <span className={cn(
+                  "absolute bottom-0 left-0 h-0.5 bg-amber-500 transition-all duration-300",
+                  route.active ? "w-full" : "w-0 group-hover:w-full"
+                )}></span>
               </Link>
             ))}
           </nav>
@@ -111,19 +128,8 @@ export function MainNav() {
               <span className="sr-only">Toggle menu</span>
             </Button>
 
-            {/* Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-2">
-              <Link href="/auth?tab=login">
-                <Button variant="ghost" className="text-gray-700 dark:text-gray-300">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/auth?tab=register">
-                <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
+
+
           </div>
         </div>
       </div>

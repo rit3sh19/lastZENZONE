@@ -21,32 +21,27 @@ export function AboutTeam() {
       name: "Vivesh",
       role: "Team Lead & Full Stack Developer",
       description: "Led the development of ZenZone, focusing on architecture and backend implementation. Passionate about creating impactful mental health solutions.",
-      image: "https://avatars.githubusercontent.com/u/12345678",
+      image: "vivesh.png",
       socials: {
-        github: "https://github.com/vivvesh",
-        linkedin: "https://linkedin.com/in/vivvesh",
-        twitter: "https://twitter.com/vivvesh"
+
       }
     },
     {
       name: "Subham",
       role: "Frontend Developer & UI/UX Designer",
       description: "Designed and implemented the beautiful, intuitive interface of ZenZone. Focused on creating a seamless user experience.",
-      image: "https://avatars.githubusercontent.com/u/23456789",
+      image: "sonu.jpg",
       socials: {
-        github: "https://github.com/subham",
-        linkedin: "https://linkedin.com/in/subham",
-        email: "mailto:subham@example.com"
+
       }
     },
     {
       name: "Ritesh",
       role: "Backend Developer & DevOps",
       description: "Ensured the reliability and scalability of ZenZone's backend services. Handled deployment and infrastructure.",
-      image: "https://avatars.githubusercontent.com/u/34567890",
+      image: "ritesh.png",
       socials: {
-        github: "https://github.com/ritesh",
-        linkedin: "https://linkedin.com/in/ritesh"
+
       }
     }
   ]
