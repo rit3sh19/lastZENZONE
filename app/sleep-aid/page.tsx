@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Moon, Play, Pause, Volume2, Clock, Sunrise } from "lucide-react"
 import Link from "next/link"
 
-
 const meditations = [
   {
     id: 1,
@@ -67,31 +66,31 @@ export default function SleepAidPage() {
   const [alarmTime, setAlarmTime] = useState("")
   const [selectedAffirmation, setSelectedAffirmation] = useState(affirmations[0])
   const [sleepHistory, setSleepHistory] = useState<any[]>([])
+  const [alarms, setAlarms] = useState<any[]>([])
+  const [mounted, setMounted] = useState(false)
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const [storedValue, setStoredValue] = useState("");
 
+  // Handle client-side mounting
   useEffect(() => {
-    const value = localStorage.getItem("some-key");
-    if (value) {
-      setStoredValue(value);
-    }
-  }, []);
-
-  return (
-    <div>
-      <h1>Sleep Aid</h1>
-      <p>Stored Value: {storedValue}</p>
-    </div>
-  );
-
-  useEffect(() => {
-    const history = localStorage.getItem("sleepHistory")
-    if (history) {
-      setSleepHistory(JSON.parse(history))
-    }
+    setMounted(true)
   }, [])
+
+  // Load data from localStorage only on client side
+  useEffect(() => {
+    if (mounted) {
+      const history = localStorage.getItem("sleepHistory")
+      if (history) {
+        setSleepHistory(JSON.parse(history))
+      }
+
+      const storedAlarms = localStorage.getItem("alarms")
+      if (storedAlarms) {
+        setAlarms(JSON.parse(storedAlarms))
+      }
+    }
+  }, [mounted])
 
   useEffect(() => {
     if (isTracking && startTime) {
@@ -123,7 +122,7 @@ export default function SleepAidPage() {
   }
 
   const stopSleepTracking = () => {
-    if (startTime) {
+    if (startTime && mounted) {
       const endTime = new Date()
       const duration = endTime.getTime() - startTime.getTime()
       const hours = Math.floor(duration / (1000 * 60 * 60))
@@ -160,7 +159,7 @@ export default function SleepAidPage() {
   }
 
   const setAlarm = () => {
-    if (alarmTime) {
+    if (alarmTime && mounted) {
       const alarm = {
         id: Date.now(),
         time: alarmTime,
@@ -168,12 +167,16 @@ export default function SleepAidPage() {
         active: true,
       }
 
-      const alarms = JSON.parse(localStorage.getItem("alarms") || "[]")
-      alarms.push(alarm)
-      localStorage.setItem("alarms", JSON.stringify(alarms))
-
+      const updatedAlarms = [...alarms, alarm]
+      setAlarms(updatedAlarms)
+      localStorage.setItem("alarms", JSON.stringify(updatedAlarms))
       setAlarmTime("")
     }
+  }
+
+  // Show loading state during hydration
+  if (!mounted) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -489,13 +492,13 @@ export default function SleepAidPage() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {JSON.parse(localStorage.getItem("alarms") || "[]").length === 0 ? (
+                    {alarms.length === 0 ? (
                       <div className="text-center py-8">
                         <p className="text-green-200 font-bold text-lg mb-2">No alarms set bestie! ⏰</p>
                         <p className="text-green-300 font-semibold">Set your first alarm above! ✨</p>
                       </div>
                     ) : (
-                      JSON.parse(localStorage.getItem("alarms") || "[]").map((alarm: any) => (
+                      alarms.map((alarm: any) => (
                         <div
                           key={alarm.id}
                           className="p-4 bg-white/10 rounded-2xl border-2 border-green-300 transform hover:scale-105 transition-all duration-300"
