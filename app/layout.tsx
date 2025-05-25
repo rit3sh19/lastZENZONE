@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://zonezen.app"),  // <-- Added here for correct social image URLs
   title: 'ZenZone - Your Mental Health Companion',
   description: 'Track your mood, practice mindfulness, and connect with a supportive community',
   icons: {

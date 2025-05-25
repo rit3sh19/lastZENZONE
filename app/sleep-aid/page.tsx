@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Moon, Play, Pause, Volume2, Clock, Sunrise } from "lucide-react"
 import Link from "next/link"
 
+
 const meditations = [
   {
     id: 1,
@@ -69,6 +70,21 @@ export default function SleepAidPage() {
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [storedValue, setStoredValue] = useState("");
+
+  useEffect(() => {
+    const value = localStorage.getItem("some-key");
+    if (value) {
+      setStoredValue(value);
+    }
+  }, []);
+
+  return (
+    <div>
+      <h1>Sleep Aid</h1>
+      <p>Stored Value: {storedValue}</p>
+    </div>
+  );
 
   useEffect(() => {
     const history = localStorage.getItem("sleepHistory")
